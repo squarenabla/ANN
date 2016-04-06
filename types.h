@@ -6,7 +6,7 @@
 #define ELECTRODENUM 4
 
 #define INTERRUPTNUM 5
-#define DATASIZE 32
+#define DATASIZE 4
 
 #include <QObject>
 #include <QVector>
@@ -14,6 +14,8 @@
 #include <QDebug>
 #include <QItemDelegate>
 #include <QLineEdit>
+
+#include "messages.h"
 
 struct TrainData{
     QVector<quint16> input;
@@ -34,8 +36,7 @@ struct EMGdata{
     quint32 movementIndex;
 };
 
-class Delegate : public QItemDelegate
-{
+class Delegate : public QItemDelegate{
 public:
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem & option,
                       const QModelIndex & index) const

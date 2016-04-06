@@ -37,12 +37,12 @@ int Device::Init(){
     return 0;
 }
 
-int Device::Interrupt(unsigned char *result){
+int Device::Interrupt(QVector<quint32> &data){
     int r;
   //  qDebug()<<"Interrupt";
-    int size = 32;
+ //   int size = 32;
 //    int actualBytesTransfered;
-    unsigned char pData[size];
+    //unsigned char pData[size];
 //    r = libusb_interrupt_transfer(devh, ENDP, &pData[0], size, &actualBytesTransfered, 1000);
 
 //    if (r != 0) {
@@ -50,12 +50,13 @@ int Device::Interrupt(unsigned char *result){
 //        return -3;
 //    }
 
-    for(int i = 0; i < size; i++) {
+    for(int i = 0; i < DATASIZE; i++) {
       //  std::cout<< (char)pData[i]<<"_";
-        pData[i] = (unsigned char)i;
+        //pData[i] = (unsigned char)i;
         //qDebug()<<(unsigned char)pData[i];
+        data[i] = i;
     }
-    std::copy(pData, pData+size, result);
+    //std::copy(pData, pData+size, data);
     //resultSize = size;
 
     //qDebug()<< actualBytesTransfered;

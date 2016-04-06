@@ -11,8 +11,7 @@
 
 
 
-class Controler : public QObject
-{
+class Controler : public QObject{
     Q_OBJECT
 public:
     explicit Controler(QObject *parent = 0);
@@ -27,7 +26,7 @@ public slots:
     void ShowResults();
 
 private:
-    void _TransferData(const unsigned char *reslutsArray, const Movement direction);
+    void _TransferData(const QVector<quint32> data, const Movement direction);
 
     Teacher _teacher;
     Device  _usbDevice;

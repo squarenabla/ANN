@@ -1,9 +1,6 @@
 #include "executor.h"
 
-Executor::Executor(QObject *parent) :
-    QObject(parent)
-{
-}
+Executor::Executor(QObject *parent) : QObject(parent){}
 
 void Executor::setANN(const char *fileName){
     _ann = fann_create_from_file(fileName);

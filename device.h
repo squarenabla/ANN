@@ -6,21 +6,22 @@
 #define ENDP 0x81
 
 #include <QDebug>
+#include <QVector>
 #include <algorithm>
 
 #include <libusb-1.0/libusb.h>
 
+#include "types.h"
 
 
-class Device
-{
+class Device{
 public:
     Device();
     ~Device();
 
     int Init();
 
-    int Interrupt(unsigned char *result);
+    int Interrupt(QVector<quint32> &data);
 
 private:
     struct libusb_device_handle *devh;

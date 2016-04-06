@@ -1,22 +1,22 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef VIEW_H
+#define VIEW_H
 
 #include <QMainWindow>
 
 //#include "device.h"
 #include "controler.h"
+#include "error.h"
 
 namespace Ui {
-    class MainWindow;
+    class View;
 }
 
-class MainWindow : public QMainWindow
-{
+class View : public QMainWindow{
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    explicit View(QWidget *parent = 0);
+    ~View();
 
 private slots:
     void on_pushButton_clicked();
@@ -24,10 +24,13 @@ private slots:
     void on_spinBox_valueChanged(int arg1);
 
 private:
-    Ui::MainWindow *ui;
+    void _ShowError(QString errString);
+    bool _validateTable();
+
+    Ui::View *ui;
     //Device *usbDevice;
     Controler _controler;
     Delegate *_tableDelegate;
 };
 
-#endif // MAINWINDOW_H
+#endif // VIEW_H

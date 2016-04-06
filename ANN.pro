@@ -15,19 +15,25 @@ LIBS += -L/usr/local/lib -lfann
 LIBS += -I/usr/include/libusb-1.0/ -lusb-1.0
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
     teacher.cpp \
     executor.cpp \
     tablewidget.cpp \
     device.cpp \
-    controler.cpp
+    controler.cpp \
+    error.cpp \
+    view.cpp
 
-HEADERS  += mainwindow.h \
+HEADERS  += \
     teacher.h \
     executor.h \
     types.h \
     tablewidget.h \
     device.h \
-    controler.h
+    controler.h \
+    error.h \
+    view.h \
+    messages.h
 
-FORMS    += mainwindow.ui
+FORMS    += \
+    error.ui \
+    main.ui

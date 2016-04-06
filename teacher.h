@@ -5,8 +5,7 @@
 
 #include "fann.h"
 
-class Teacher: public QObject
-{
+class Teacher: public QObject{
     Q_OBJECT
 
 public:
@@ -16,7 +15,7 @@ public:
 signals:
 
 public slots:
-    void setLayers(quint16 num_layers, const quint16 *layers);
+    void setLayers(quint16 numLayers, const quint16 *layers);
 
     void createTrainData(const QVector<EMGdata> data);
     void trainOnFile(const char *fileName);
@@ -24,12 +23,12 @@ public slots:
     //void trainOnData(TrainData trainData);
 
 private:
-    quint16                 _num_input;
+    quint16                 _numInput;
     QVector<quint16>        _numNeuronsInLayer;
-    quint16                 _num_layers;
-    qreal                   _desired_error;
-    quint16                 _max_epochs;
-    quint16                 _epochs_between_reports;
+    quint16                 _numLayers;
+    qreal                   _desiredError;
+    quint16                 _maxEpochs;
+    quint16                 _epochsBetweenReports;
     struct fann_train_data *_data;
 
 };
