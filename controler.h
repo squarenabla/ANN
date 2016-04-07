@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include "teacher.h"
+#include "executor.h"
 #include "device.h"
 
 
@@ -19,16 +20,21 @@ public:
 signals:
 
 public slots:
-    int Move(const Movement direction);
+
     int SetTeacher();
-    int Teach();
+    int SetANNLayers(const ANNLayers hiddenLayers);
+    void Teach();
+    void Execute();
 
     void ShowResults();
 
 private:
+    int _Move(const Movement direction);
     void _TransferData(const QVector<quint32> data, const Movement direction);
 
+
     Teacher _teacher;
+    Executor _executor;
     Device  _usbDevice;
     QVector<EMGdata> _EMGresults;
 };

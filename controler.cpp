@@ -1,5 +1,7 @@
 #include "controler.h"
 
+
+
 Controler::Controler(QObject *parent) : QObject(parent){
     _usbDevice.Init();
 }
@@ -8,13 +10,38 @@ int Controler::SetTeacher(){
     return 0;
 }
 
-int Controler::Teach(){
-    _teacher.createTrainData(_EMGresults);
-    _teacher.trainOnData();
+int Controler::SetANNLayers(const ANNLayers hiddenLayers){
+    _teacher.setLayers(hiddenLayers);
     return 0;
 }
 
-int Controler::Move(const Movement direction){
+void Controler::Teach(){
+    for(int i = 0; i < TRAINNUM; i++){
+        _Move(trainSequence[i]);
+    }
+    ShowResults();
+    _teacher.createTrainData(_EMGresults);
+    _teacher.trainOnData();
+}
+
+void Controler::Execute(){
+    QVector<quint32> data(DATASIZE);
+    QVector<float> rdata(DATASIZE);
+    QVector<float> result;
+
+    _executor.setANN(FANNFILENAME);
+
+    _usbDevice.Interrupt(data);
+
+    std::transform(data.begin(), data.end(), rdata.begin(), [](quint32 val) -> float{
+                   return (float)val/MAXAMLVALUE;
+    });
+
+    _executor.execute(rdata, result);
+    printVector(result);
+}
+
+int Controler::_Move(const Movement direction){
 //    unsigned char resultsArray[INTERRUPTNUM*DATASIZE];
 //    for(unsigned int i=0; i<INTERRUPTNUM; i++){
 //        //int resultSize = 0;
@@ -68,7 +95,7 @@ void Controler::_TransferData(const QVector<quint32> data, const Movement direct
 }
 
 void Controler::ShowResults(){
-    for(unsigned int i = 0; i < _EMGresults.size(); i++){
+    for(int i = 0; i < _EMGresults.size(); i++){
         qDebug()<<i<<": "<<_EMGresults[i].electrodeEMG[0]<<" "
                          <<_EMGresults[i].electrodeEMG[1]<<" "
                          <<_EMGresults[i].electrodeEMG[2]<<" "

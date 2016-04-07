@@ -4,7 +4,7 @@
 
 #include "types.h"
 
-#include "doublefann.h"
+#include "fann.h"
 
 class Executor : public QObject{
     Q_OBJECT
@@ -15,7 +15,7 @@ signals:
 
 public slots:
     void setANN(const char *fileName);
-    void execute(QVector<qreal> input, QVector<qreal> &output);
+    void execute(QVector<float> input, QVector<float> &output);
 
 private:
     struct fann *_ann;

@@ -21,6 +21,8 @@ View::View(QWidget *parent) :
     ui->tableWidget->setItemDelegate(_tableDelegate);
 
 
+    connect(ui->executeButton, SIGNAL(pressed()), &_controler, SLOT(Execute()));
+    connect(this, SIGNAL(startLearning()), &_controler, SLOT(Teach()));
   //  usbDevice = new Device();
   //  usbDevice->Init();
     //connect(ui->);
@@ -32,19 +34,6 @@ View::~View(){
    // delete usbDevice;
 }
 
-void View::on_pushButton_clicked(){
-    //ui->tableWidget->insertRow(1);
-    qDebug()<<"pb clicked";
-    if(!_validateTable()){
-        _ShowError(BAD_TAB_CONTENT);
-    }
-    else{
-        _controler.Move(UP);
-        _controler.ShowResults();
-        _controler.Teach();
-    }
-}
-
 void View::on_spinBox_valueChanged(int arg1){
     qint32 rowNum =  ui->tableWidget->rowCount();
 
@@ -54,7 +43,7 @@ void View::on_spinBox_valueChanged(int arg1){
         ui->tableWidget->setItem(rowNum + i, 0, item);
     }
 
-    for(qint32 i = 0; i < rowNum-arg1; i++)
+    for(qint32 i = 0; i < rowNum - arg1; i++)
         ui->tableWidget->removeRow(rowNum - 1 - i);
 
 }
@@ -64,11 +53,30 @@ void View::_ShowError(QString errString){
     err.show();
 }
 
-bool View::_validateTable(){
+bool View::_ValidateTable(){
     for(int i = 0; i < ui->tableWidget->rowCount(); i++){
         if(ui->tableWidget->item(0,0)->text() == ""){
             return 0;
         }
     }
     return 1;
+}
+
+void View::on_learnButton_clicked()
+{
+    //ui->tableWidget->insertRow(1);
+    qDebug()<<"pb clicked";
+
+    ANNLayers hiddenLayers(ui->tableWidget->rowCount());
+    for(int i = 0; i < hiddenLayers.size(); i++){
+        hiddenLayers[i] = ui->tableWidget->item(i,0)->text().toUInt();
+    }
+
+    _controler.SetANNLayers(hiddenLayers);
+    emit startLearning();
+
+    //    _controler.Move(UP);
+    //    _controler.ShowResults();
+    //    _controler.Teach();
+
 }

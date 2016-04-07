@@ -19,13 +19,18 @@ public:
     ~View();
 
 private slots:
-    void on_pushButton_clicked();
+//    void on_pushButton_clicked();
 
     void on_spinBox_valueChanged(int arg1);
 
+    void on_learnButton_clicked();
+
+signals:
+    void startLearning();
+
 private:
     void _ShowError(QString errString);
-    bool _validateTable();
+    bool _ValidateTable();
 
     Ui::View *ui;
     //Device *usbDevice;

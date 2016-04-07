@@ -17,6 +17,17 @@ int fann_set_train_data(struct fann_train_data* data, unsigned int num, fann_typ
     return 0;
 }
 
+template <class InputIterator, class OutputIterator, class UnaryOperator, class Param>
+OutputIterator transform (InputIterator first1, InputIterator last1,
+                            OutputIterator result, UnaryOperator op, Param param1){
+    while (first1 != last1){
+        *result = op(*first1, param1);  // or: *result=binary_op(*first1,*first2++);
+        ++result;
+        ++first1;
+    }
+    return result;
+}
+
 Teacher::Teacher(QObject *parent) : QObject(parent){
     //default values
     _desiredError = (qreal) 0.000001;
@@ -31,23 +42,32 @@ Teacher::Teacher(QObject *parent) : QObject(parent){
     _numNeuronsInLayer.push_back(1);
 }
 
-void Teacher::setLayers(quint16 numLayers, const quint16 *layers){
-    _numLayers = numLayers;
-    for(quint16 i = 0; i < numLayers; i++){
+void Teacher::setLayers(const ANNLayers hiddenLayers){
+    _numLayers = hiddenLayers.size() + 2;
+    _numNeuronsInLayer = hiddenLayers;
+    _numNeuronsInLayer.push_front(ELECTRODENUM);
+    _numNeuronsInLayer.push_back(1);
+
+    qDebug() << "Neurons";
+    printVector(_numNeuronsInLayer);
+    /*
+    for(quint16 i = 0; i < hiddenLayers; i++){
             _numNeuronsInLayer.push_back(layers[i]);
-    }
+    }*/
 }
 
 void Teacher::createTrainData(const QVector<EMGdata> data){
     qDebug()<<"createTrainData";
     _data = fann_create_train( data.size(), ELECTRODENUM, 1 );
-    fann_type input[ELECTRODENUM], output[1];
+
+    fann_type input[ELECTRODENUM];
+    fann_type output[1];
 
     for(int i = 0; i < data.size(); i++){
         for(unsigned int j = 0; j < ELECTRODENUM; j++){
-            input[j] = ((float)data[i].electrodeEMG[j]/UINT_MAX);
+            input[j] = ((float)data[i].electrodeEMG[j])/MAXAMLVALUE;
         }
-        output[0] = (float)data[i].movementIndex/UINT_MAX;
+        output[0] = ((float)data[i].movementIndex)/MAXAMLVALUE;
 
         fann_set_train_data(_data, i, input, output);
     }
