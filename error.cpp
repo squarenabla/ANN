@@ -3,12 +3,12 @@
 
 Error::Error(QWidget *parent, QString errString) :
 QDialog(parent),
-ui(new Ui::Error){
+ui(new Ui::Error) {
 
     ui->setupUi(this);
     ui->label->setText(errString);
 }
 
-Error::~Error(){
+Error::~Error() {
     delete ui;
 }

@@ -29,13 +29,13 @@
 
 typedef QVector<quint16> ANNLayers;
 
-enum Movement{
+typedef enum Movement{
     REST = 0,
     UP = 2,
     DOWN = 4,
     RIGHT = 6,
     LEFT = 8
-};
+} Movement;
 
 struct TrainData{
     QVector<quint16> input;
@@ -62,8 +62,8 @@ public:
 };
 
 
-//Movement trainSequence[TRAINNUM] = {UP, DOWN, RIGHT, LEFT, REST, UP, DOWN, RIGHT, LEFT, REST};
-const static Movement trainSequence[TRAINNUM] = {UP, UP, UP, UP, UP, UP, UP, UP, UP, UP};
+const static Movement trainSequence[TRAINNUM] = {UP, DOWN, RIGHT, LEFT, REST, UP, DOWN, RIGHT, LEFT, REST};
+//const static Movement trainSequence[TRAINNUM] = {UP, UP, UP, UP, UP, UP, UP, UP, UP, UP};
 
 template <class Type>
 void printVector(QVector<Type> vec){

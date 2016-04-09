@@ -1,16 +1,18 @@
 #include "teacher.h"
 
-int fann_set_train_data(struct fann_train_data* data, unsigned int num, fann_type* input, fann_type* output){
-    if(num >= data->num_data){
+int fann_set_train_data(struct fann_train_data* data,
+                        unsigned int num, fann_type* input,
+                        fann_type* output) {
+    if(num >= data->num_data) {
         fann_error(NULL, FANN_E_INDEX_OUT_OF_BOUND);
         return -1;
     }
 
-    for(unsigned int i = 0; i < data->num_input; i++){
+    for (unsigned int i = 0; i < data->num_input; i++) {
         data->input[num][i] = input[i];
     }
 
-    for(unsigned int i=0; i<data->num_output ;i++){
+    for (unsigned int i=0; i<data->num_output ;i++) {
         data->output[num][i] = output[i];
     }
 
@@ -19,8 +21,8 @@ int fann_set_train_data(struct fann_train_data* data, unsigned int num, fann_typ
 
 template <class InputIterator, class OutputIterator, class UnaryOperator, class Param>
 OutputIterator transform (InputIterator first1, InputIterator last1,
-                            OutputIterator result, UnaryOperator op, Param param1){
-    while (first1 != last1){
+                          OutputIterator result, UnaryOperator op, Param param1) {
+    while (first1 != last1) {
         *result = op(*first1, param1);  // or: *result=binary_op(*first1,*first2++);
         ++result;
         ++first1;
@@ -28,7 +30,7 @@ OutputIterator transform (InputIterator first1, InputIterator last1,
     return result;
 }
 
-Teacher::Teacher(QObject *parent) : QObject(parent){
+Teacher::Teacher(QObject *parent) : QObject(parent) {
     //default values
     _desiredError = (qreal) 0.000001;
     _maxEpochs = 50000;
@@ -36,13 +38,13 @@ Teacher::Teacher(QObject *parent) : QObject(parent){
 
     _numLayers = 5;
     _numNeuronsInLayer.push_back(ELECTRODENUM);
-    for(quint16 i=0; i<3; i++){
-            _numNeuronsInLayer.push_back(2);
+    for (quint16 i = 0; i < 3; i++) {
+        _numNeuronsInLayer.push_back(2);
     }
     _numNeuronsInLayer.push_back(1);
 }
 
-void Teacher::setLayers(const ANNLayers hiddenLayers){
+void Teacher::setLayers(const ANNLayers hiddenLayers) {
     _numLayers = hiddenLayers.size() + 2;
     _numNeuronsInLayer = hiddenLayers;
     _numNeuronsInLayer.push_front(ELECTRODENUM);
@@ -56,15 +58,15 @@ void Teacher::setLayers(const ANNLayers hiddenLayers){
     }*/
 }
 
-void Teacher::createTrainData(const QVector<EMGdata> data){
+void Teacher::createTrainData(const QVector<EMGdata> data) {
     qDebug()<<"createTrainData";
     _data = fann_create_train( data.size(), ELECTRODENUM, 1 );
 
     fann_type input[ELECTRODENUM];
     fann_type output[1];
 
-    for(int i = 0; i < data.size(); i++){
-        for(unsigned int j = 0; j < ELECTRODENUM; j++){
+    for (int i = 0; i < data.size(); i++) {
+        for (unsigned int j = 0; j < ELECTRODENUM; j++) {
             input[j] = ((float)data[i].electrodeEMG[j])/MAXAMLVALUE;
         }
         output[0] = ((float)data[i].movementIndex)/MAXAMLVALUE;
@@ -73,7 +75,7 @@ void Teacher::createTrainData(const QVector<EMGdata> data){
     }
 }
 
-void Teacher::trainOnFile(const char *fileName){
+void Teacher::trainOnFile(const char *fileName) {
     qDebug()<<"trainOnFile";
 
     struct fann *ann = fann_create_standard_array(_numLayers, (unsigned int*)_numNeuronsInLayer.constData());
@@ -87,13 +89,13 @@ void Teacher::trainOnFile(const char *fileName){
     fann_destroy(ann);
 }
 
-void Teacher::trainOnData(){
+void Teacher::trainOnData() {
     qDebug()<<"trainOnData";
     qDebug()<<"params";
     //const short unsigned int* data = (_numNeuronsInLayer.constData());
     //unsigned int* d = (unsigned int *)data;
     unsigned int data[_numLayers];
-    for(unsigned int i = 0; i < _numLayers; i++){
+    for (unsigned int i = 0; i < _numLayers; i++) {
         data[i] = (unsigned int)_numNeuronsInLayer[i];
     }
     struct fann *ann = fann_create_standard_array(_numLayers, data);

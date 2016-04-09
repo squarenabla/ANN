@@ -1,9 +1,9 @@
 #include "tablewidget.h"
 
 TableWidget::TableWidget(QWidget *parent) :
-QTableWidget(parent){}
+QTableWidget(parent) {}
 
-void TableWidget::insertRows(int row){
+void TableWidget::insertRows(int row) {
     insertRow(1);
     int rowNum = rowCount();
     int columnNum = colorCount();

@@ -2,6 +2,7 @@
 #define VIEW_H
 
 #include <QMainWindow>
+#include <QThread>
 
 //#include "device.h"
 #include "controler.h"
@@ -34,8 +35,9 @@ private:
 
     Ui::View *ui;
     //Device *usbDevice;
-    Controler _controler;
+    Controler *_controler;
     Delegate *_tableDelegate;
+    QThread workerThread;
 };
 
 #endif // VIEW_H

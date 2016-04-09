@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     device.cpp \
     controler.cpp \
     error.cpp \
-    view.cpp
+    view.cpp \
+    painter.cpp
 
 HEADERS  += \
     teacher.h \
@@ -34,7 +35,8 @@ HEADERS  += \
     controler.h \
     error.h \
     view.h \
-    messages.h
+    messages.h \
+    painter.h
 
 FORMS    += \
     error.ui \

@@ -2,21 +2,23 @@
 
 
 
-Controler::Controler(QObject *parent) : QObject(parent){
+Controler::Controler(QObject *parent) : QObject(parent) {
     _usbDevice.Init();
 }
 
-int Controler::SetTeacher(){
+int Controler::SetTeacher() {
     return 0;
 }
 
-int Controler::SetANNLayers(const ANNLayers hiddenLayers){
+int Controler::SetANNLayers(const ANNLayers hiddenLayers) {
     _teacher.setLayers(hiddenLayers);
     return 0;
 }
 
-void Controler::Teach(){
-    for(int i = 0; i < TRAINNUM; i++){
+void Controler::Teach() {
+    for (int i = 0; i < TRAINNUM; i++) {
+        emit MovementChanged(trainSequence[i]);
+        QThread::sleep(2);
         _Move(trainSequence[i]);
     }
     ShowResults();
@@ -24,7 +26,7 @@ void Controler::Teach(){
     _teacher.trainOnData();
 }
 
-void Controler::Execute(){
+void Controler::Execute() {
     QVector<quint32> data(DATASIZE);
     QVector<float> rdata(DATASIZE);
     QVector<float> result;
@@ -33,7 +35,7 @@ void Controler::Execute(){
 
     _usbDevice.Interrupt(data);
 
-    std::transform(data.begin(), data.end(), rdata.begin(), [](quint32 val) -> float{
+    std::transform(data.begin(), data.end(), rdata.begin(), [](quint32 val) -> float {
                    return (float)val/MAXAMLVALUE;
     });
 
@@ -41,7 +43,7 @@ void Controler::Execute(){
     printVector(result);
 }
 
-int Controler::_Move(const Movement direction){
+int Controler::_Move(const Movement direction) {
 //    unsigned char resultsArray[INTERRUPTNUM*DATASIZE];
 //    for(unsigned int i=0; i<INTERRUPTNUM; i++){
 //        //int resultSize = 0;
@@ -57,7 +59,7 @@ int Controler::_Move(const Movement direction){
 
 //    _TransferData(resultsArray, direction);
 
-    for(unsigned int i = 0; i < INTERRUPTNUM; ++i){
+    for (unsigned int i = 0; i < INTERRUPTNUM; ++i) {
         QVector<quint32> data(DATASIZE);
         _usbDevice.Interrupt(data);
         _TransferData(data, direction);
@@ -66,7 +68,7 @@ int Controler::_Move(const Movement direction){
     return 0;
 }
 
-void Controler::_TransferData(const QVector<quint32> data, const Movement direction){
+void Controler::_TransferData(const QVector<quint32> data, const Movement direction) {
     qDebug()<<"_TransferData";
 
     EMGdata EMGelement;
@@ -95,7 +97,7 @@ void Controler::_TransferData(const QVector<quint32> data, const Movement direct
 }
 
 void Controler::ShowResults(){
-    for(int i = 0; i < _EMGresults.size(); i++){
+    for (int i = 0; i < _EMGresults.size(); i++) {
         qDebug()<<i<<": "<<_EMGresults[i].electrodeEMG[0]<<" "
                          <<_EMGresults[i].electrodeEMG[1]<<" "
                          <<_EMGresults[i].electrodeEMG[2]<<" "

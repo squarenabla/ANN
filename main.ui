@@ -38,7 +38,31 @@
           </property>
           <layout class="QGridLayout" name="gridLayout_2">
            <item row="0" column="0">
-            <widget class="QWidget" name="widget" native="true"/>
+            <widget class="Painter" name="trainWidget" native="true"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="comandLabel">
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>15</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>13</pointsize>
+               <weight>75</weight>
+               <bold>true</bold>
+               <kerning>true</kerning>
+              </font>
+             </property>
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -229,7 +253,7 @@
              <x>60</x>
              <y>40</y>
              <width>211</width>
-             <height>81</height>
+             <height>103</height>
             </rect>
            </property>
            <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -289,9 +313,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QWidget" name="widget_2" native="true">
-          <zorder>groupBox_4</zorder>
-         </widget>
+         <widget class="QWidget" name="widget_2" native="true"/>
         </item>
        </layout>
       </widget>
@@ -321,6 +343,12 @@
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
+  <customwidget>
+   <class>Painter</class>
+   <extends>QWidget</extends>
+   <header location="global">painter.h</header>
+   <container>1</container>
+  </customwidget>
   <customwidget>
    <class>TableWidget</class>
    <extends>QTableWidget</extends>

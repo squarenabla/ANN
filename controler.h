@@ -4,6 +4,7 @@
 
 
 #include <QObject>
+#include <QThread>
 
 #include "types.h"
 #include "teacher.h"
@@ -28,6 +29,8 @@ public slots:
 
     void ShowResults();
 
+signals:
+    void MovementChanged(const Movement direction);
 private:
     int _Move(const Movement direction);
     void _TransferData(const QVector<quint32> data, const Movement direction);

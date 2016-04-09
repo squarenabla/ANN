@@ -1,10 +1,11 @@
 #include "view.h"
+#include "types.h"
 #include <QApplication>
 
-int main(int argc, char *argv[]){
+int main(int argc, char *argv[]) {
+    qRegisterMetaType<Movement>("Movement");
     QApplication a(argc, argv);
     View window;
     window.show();
-
     return a.exec();
 }
