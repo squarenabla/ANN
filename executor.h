@@ -6,7 +6,7 @@
 
 #include "fann.h"
 
-class Executor : public QObject{
+class Executor : public QObject {
     Q_OBJECT
 public:
     explicit Executor(QObject *parent = 0);

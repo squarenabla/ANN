@@ -4,10 +4,10 @@
 #include <QDialog>
 
 namespace Ui {
-class Error;
+    class Error;
 }
 
-class Error : public QDialog{
+class Error : public QDialog {
     Q_OBJECT
 
 public:

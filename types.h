@@ -29,7 +29,7 @@
 
 typedef QVector<quint16> ANNLayers;
 
-typedef enum Movement{
+typedef enum Movement {
     REST = 0,
     UP = 2,
     DOWN = 4,
@@ -37,21 +37,20 @@ typedef enum Movement{
     LEFT = 8
 } Movement;
 
-struct TrainData{
+struct TrainData {
     QVector<quint16> input;
     QVector<quint16> output;
 };
 
-struct EMGdata{
+struct EMGdata {
     QVector<quint32> electrodeEMG;
     quint32 movementIndex;
 };
 
-class Delegate : public QItemDelegate{
+class Delegate : public QItemDelegate {
 public:
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                      const QModelIndex & ndex) const
-    {
+                      const QModelIndex & ndex) const {
         QLineEdit *lineEdit = new QLineEdit(parent);
         // Set validator
         QIntValidator *validator = new QIntValidator(1, 9, lineEdit);
@@ -66,8 +65,8 @@ const static Movement trainSequence[TRAINNUM] = {UP, DOWN, RIGHT, LEFT, REST, UP
 //const static Movement trainSequence[TRAINNUM] = {UP, UP, UP, UP, UP, UP, UP, UP, UP, UP};
 
 template <class Type>
-void printVector(QVector<Type> vec){
-    for(int i = 0; i < vec.size(); i++){
+void printVector(QVector<Type> vec) {
+    for (int i = 0; i < vec.size(); i++) {
         qDebug() << vec[i];
     }
 }

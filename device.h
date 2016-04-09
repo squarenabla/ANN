@@ -14,7 +14,7 @@
 #include "types.h"
 
 
-class Device{
+class Device {
 public:
     Device();
     ~Device();

@@ -5,7 +5,7 @@
 
 #include "fann.h"
 
-class Teacher: public QObject{
+class Teacher: public QObject {
     Q_OBJECT
 
 public:

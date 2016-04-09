@@ -1,16 +1,15 @@
 #include "device.h"
 
-Device::Device()
-{
+Device::Device() {
     devh = NULL;
 }
 
-Device::~Device(){
+Device::~Device() {
 //    libusb_release_interface(devh, 0);
 //    libusb_exit(NULL);
 }
 
-int Device::Init(){
+int Device::Init() {
     int r;
 
 //    r = libusb_init(NULL);
@@ -37,7 +36,7 @@ int Device::Init(){
     return 0;
 }
 
-int Device::Interrupt(QVector<quint32> &data){
+int Device::Interrupt(QVector<quint32> &data) {
     int r;
   //  qDebug()<<"Interrupt";
  //   int size = 32;
@@ -50,7 +49,7 @@ int Device::Interrupt(QVector<quint32> &data){
 //        return -3;
 //    }
 
-    for(int i = 0; i < DATASIZE; i++) {
+    for (int i = 0; i < DATASIZE; i++) {
       //  std::cout<< (char)pData[i]<<"_";
         //pData[i] = (unsigned char)i;
         //qDebug()<<(unsigned char)pData[i];
