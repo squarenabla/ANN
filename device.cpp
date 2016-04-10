@@ -1,12 +1,31 @@
 #include "device.h"
 
-Device::Device() {
+Device::Device(QObject *parent) : QThread(parent) {
     devh = NULL;
+    timeKey = 0;
+    buffer.fill(QVector<quint32>(ELECTRODENUM, 0), BUFFER_SIZE);
+    lastData.fill(0, ELECTRODENUM);
 }
 
 Device::~Device() {
 //    libusb_release_interface(devh, 0);
 //    libusb_exit(NULL);
+}
+
+void Device::run() {
+    while(1) {
+        mutex.lock();
+        //qDebug() << "Hello from device";
+        for (int i = 0; i < ELECTRODENUM; i++) {
+            lastData[i] = qrand() % 10;
+        }
+        buffer.push_back(lastData);
+        buffer.pop_front();
+        emit DataReceived(timeKey++, lastData);
+        mutex.unlock();
+        msleep(50);
+    }
+    exec();
 }
 
 int Device::Init() {
@@ -62,3 +81,8 @@ int Device::Interrupt(QVector<quint32> &data) {
     return 0;
 }
 
+int Device::GetBuffer(QVector<QVector<quint32> > &data) {
+    mutex.lock();
+    data = buffer;
+    mutex.unlock();
+}

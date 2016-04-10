@@ -13,12 +13,11 @@
 
 
 
-class Controler : public QObject{
+class Controler : public QObject {
     Q_OBJECT
 public:
     explicit Controler(QObject *parent = 0);
-
-signals:
+    ~Controler();
 
 public slots:
 
@@ -31,6 +30,7 @@ public slots:
 
 signals:
     void MovementChanged(const Movement direction);
+    void DataReceived(quint32 key, ElectrodeEMG data);
 private:
     int _Move(const Movement direction);
     void _TransferData(const QVector<quint32> data, const Movement direction);

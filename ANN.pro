@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-CONFIG += c++11
+QT       += printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ANN
@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     controler.cpp \
     error.cpp \
     view.cpp \
-    painter.cpp
+    painter.cpp \
+    qcustomplot.cpp
 
 HEADERS  += \
     teacher.h \
@@ -36,7 +37,8 @@ HEADERS  += \
     error.h \
     view.h \
     messages.h \
-    painter.h
+    painter.h \
+    qcustomplot.h
 
 FORMS    += \
     error.ui \

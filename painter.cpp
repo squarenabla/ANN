@@ -1,7 +1,7 @@
 #include "painter.h"
 
 Painter::Painter(QWidget *parent) : QWidget(parent) {
-    if (!image.load("./data/arrowR")) {
+    if (!image.load("./data/cross")) {
         qDebug() << "Error loading image";
     }
     rotateAngl = 0.0;
@@ -9,6 +9,9 @@ Painter::Painter(QWidget *parent) : QWidget(parent) {
 
 void Painter::rotateImage(const Movement direction) {
     switch (direction) {
+    case REST:
+        image.load("./data/cross");
+        break;
     case UP:
         image.load("./data/arrowU");
         break;

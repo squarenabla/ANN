@@ -14,7 +14,7 @@
 
 #include "types.h"
 
-class Painter : public QWidget{
+class Painter : public QWidget {
     Q_OBJECT
 public:
     explicit Painter(QWidget *parent = 0);

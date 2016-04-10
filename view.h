@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QThread>
 
+#include "qcustomplot.h"
 //#include "device.h"
 #include "controler.h"
 #include "error.h"
@@ -21,10 +22,14 @@ public:
 
 private slots:
 //    void on_pushButton_clicked();
+    void setupPlot(const quint16 graphNum);
+    void plotEMGData(const quint32 key, const ElectrodeEMG &data);
 
     void on_spinBox_valueChanged(int arg1);
 
     void on_learnButton_clicked();
+
+    void changeInstruction(const Movement movement);
 
 signals:
     void startLearning();

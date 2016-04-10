@@ -17,12 +17,16 @@ ui(new Ui::View) {
     _tableDelegate = new Delegate;
     ui->tableWidget->setItemDelegate(_tableDelegate);
 
+    setupPlot(ELECTRODENUM);
+
     _controler = new Controler();
     _controler->moveToThread(&workerThread);
 
     connect(ui->executeButton, SIGNAL(pressed()), _controler, SLOT(Execute()));
     connect(this, SIGNAL(startLearning()), _controler, SLOT(Teach()), Qt::QueuedConnection);
     connect(_controler, SIGNAL(MovementChanged(Movement)), ui->trainWidget, SLOT(rotateImage(Movement)));
+    connect(_controler, SIGNAL(MovementChanged(Movement)), this, SLOT(changeInstruction(Movement)));
+    connect(_controler, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SLOT(plotEMGData(quint32,ElectrodeEMG)));
     connect(&workerThread, SIGNAL(finished()), _controler, SLOT(deleteLater()));
     workerThread.start();
   //  usbDevice = new Device();
@@ -36,6 +40,46 @@ View::~View() {
     workerThread.quit();
     workerThread.wait();
    // delete usbDevice;
+}
+
+void View::setupPlot(const quint16 graphNum) {
+    for (quint16 i = 0; i < graphNum; i++) {
+        ui->graph->addGraph();
+        ui->graph->graph(i)->setPen(QPen(Qt::gray + i % 10));
+    }
+
+    for (quint16 i = graphNum; i < 2 * graphNum; i++) {
+        ui->graph->addGraph();
+        ui->graph->graph(i)->setPen(QPen(Qt::red));
+        ui->graph->graph(i)->setLineStyle(QCPGraph::lsNone);
+        ui->graph->graph(i)->setScatterStyle(QCPScatterStyle::ssDisc);
+    }
+
+    // make left and bottom axes transfer their ranges to right and top axes:
+    connect(ui->graph->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->graph->xAxis2, SLOT(setRange(QCPRange)));
+    connect(ui->graph->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->graph->yAxis2, SLOT(setRange(QCPRange)));
+}
+
+void View::plotEMGData(const quint32 key, const ElectrodeEMG &data) {
+    for (int i = 0; i < data.size(); i++) {
+        // add data to lines:
+        ui->graph->graph(i)->addData((double)key, (double)data[i]);
+        // set data of dots:
+        ui->graph->graph(data.size() + i)->clearData();
+        ui->graph->graph(data.size() + i)->addData((double)key, (double)data[i]);
+        // remove data of lines that's outside visible range:
+        ui->graph->graph(i)->removeDataBefore((double)key-100);
+
+    }
+    // rescale value (vertical) axis to fit the current data:
+    ui->graph->graph(0)->rescaleValueAxis();
+    for (int i = 1; i < data.size(); i++) {
+        ui->graph->graph(i)->rescaleValueAxis(true);
+    }
+
+    // make key axis range scroll with the data (at a constant range size of 8):
+    ui->graph->xAxis->setRange((double)key+0.25, 100, Qt::AlignRight);
+    ui->graph->replot();
 }
 
 void View::on_spinBox_valueChanged(int arg1) {
@@ -83,4 +127,26 @@ void View::on_learnButton_clicked() {
     //    _controler.ShowResults();
     //    _controler.Teach();
 
+}
+
+void View::changeInstruction(const Movement movement) {
+    switch (movement) {
+    case REST:
+        ui->comandLabel->setText("Please, perform a rest");
+        break;
+    case UP:
+        ui->comandLabel->setText("Please, perform an UP movement");
+        break;
+    case DOWN:
+        ui->comandLabel->setText("Please, perform a DOWN movement");
+        break;
+    case RIGHT:
+        ui->comandLabel->setText("Please, perform a RIGHT movement");
+        break;
+    case LEFT:
+        ui->comandLabel->setText("Please, perform a LEFT movement");
+        break;
+    default:
+        break;
+    }
 }

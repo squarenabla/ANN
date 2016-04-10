@@ -28,6 +28,7 @@
 #include "messages.h"
 
 typedef QVector<quint16> ANNLayers;
+typedef QVector<quint32> ElectrodeEMG;
 
 typedef enum Movement {
     REST = 0,
@@ -43,7 +44,7 @@ struct TrainData {
 };
 
 struct EMGdata {
-    QVector<quint32> electrodeEMG;
+    ElectrodeEMG electrodeEMG;
     quint32 movementIndex;
 };
 

@@ -4,6 +4,13 @@
 
 Controler::Controler(QObject *parent) : QObject(parent) {
     _usbDevice.Init();
+    _usbDevice.start();
+    connect(&_usbDevice, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SIGNAL(DataReceived(quint32,ElectrodeEMG)));
+}
+
+Controler::~Controler() {
+    _usbDevice.terminate();
+    _usbDevice.wait();
 }
 
 int Controler::SetTeacher() {
