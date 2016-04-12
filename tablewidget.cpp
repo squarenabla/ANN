@@ -9,5 +9,4 @@ void TableWidget::insertRows(int row) {
     int columnNum = colorCount();
     QTableWidgetItem *newItem = new QTableWidgetItem();
     setItem(rowNum, columnNum, newItem);
-//    //for(unsigned int i=)
 }

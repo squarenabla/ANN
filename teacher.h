@@ -17,7 +17,7 @@ signals:
 public slots:
     void setLayers(const ANNLayers hiddenLayers);
 
-    void createTrainData(const QVector<EMGdata> data);
+    void createTrainData(const QVector<EMGFourierData> data);
     void trainOnFile(const char *fileName);
     void trainOnData();
     //void trainOnData(TrainData trainData);

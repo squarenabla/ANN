@@ -3,13 +3,13 @@
 
 #define FANNFILENAME "./data/fann"
 
-#define ELECTRODENUM 4
+#define ELECTRODENUM 8
 
 #define INTERRUPTNUM 5
 #define DATASIZE 4
 
-#define TRAINNUM 10
-
+#define TRAINNUM 2
+#define BUFFER_SIZE 32
 //#define MAXAMLVALUE UINT_MAX
 #define MAXAMLVALUE 10
 
@@ -29,6 +29,8 @@
 
 typedef QVector<quint16> ANNLayers;
 typedef QVector<quint32> ElectrodeEMG;
+typedef QVector<qreal> FourierTransform;
+typedef QVector<QVector<qreal> > EMGFourier;
 
 typedef enum Movement {
     REST = 0,
@@ -48,13 +50,18 @@ struct EMGdata {
     quint32 movementIndex;
 };
 
+struct EMGFourierData {
+    QVector<QVector<qreal> > fourierArray;
+    quint32 movementIndex;
+};
+
 class Delegate : public QItemDelegate {
 public:
     QWidget* createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                       const QModelIndex & ndex) const {
         QLineEdit *lineEdit = new QLineEdit(parent);
         // Set validator
-        QIntValidator *validator = new QIntValidator(1, 9, lineEdit);
+        QIntValidator *validator = new QIntValidator(1, 100, lineEdit);
         lineEdit->setValidator(validator);
         lineEdit->setText("1");
         return lineEdit;
@@ -62,7 +69,7 @@ public:
 };
 
 
-const static Movement trainSequence[TRAINNUM] = {UP, DOWN, RIGHT, LEFT, REST, UP, DOWN, RIGHT, LEFT, REST};
+const static Movement trainSequence[TRAINNUM] = {UP, REST};
 //const static Movement trainSequence[TRAINNUM] = {UP, UP, UP, UP, UP, UP, UP, UP, UP, UP};
 
 template <class Type>

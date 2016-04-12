@@ -24,6 +24,7 @@ private slots:
 //    void on_pushButton_clicked();
     void setupPlot(const quint16 graphNum);
     void plotEMGData(const quint32 key, const ElectrodeEMG &data);
+    void PlotFourierTransformation(FourierTransform yData);
 
     void on_spinBox_valueChanged(int arg1);
 

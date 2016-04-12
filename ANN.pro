@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     error.cpp \
     view.cpp \
     painter.cpp \
-    qcustomplot.cpp
+    qcustomplot.cpp \
+    FFT/fft.cpp
 
 HEADERS  += \
     teacher.h \
@@ -38,7 +39,8 @@ HEADERS  += \
     view.h \
     messages.h \
     painter.h \
-    qcustomplot.h
+    qcustomplot.h \
+    FFT/fft.h
 
 FORMS    += \
     error.ui \

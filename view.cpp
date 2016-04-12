@@ -27,11 +27,9 @@ ui(new Ui::View) {
     connect(_controler, SIGNAL(MovementChanged(Movement)), ui->trainWidget, SLOT(rotateImage(Movement)));
     connect(_controler, SIGNAL(MovementChanged(Movement)), this, SLOT(changeInstruction(Movement)));
     connect(_controler, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SLOT(plotEMGData(quint32,ElectrodeEMG)));
+    connect(_controler, SIGNAL(FourierTranformation(FourierTransform)), this, SLOT(PlotFourierTransformation(FourierTransform)));
     connect(&workerThread, SIGNAL(finished()), _controler, SLOT(deleteLater()));
     workerThread.start();
-  //  usbDevice = new Device();
-  //  usbDevice->Init();
-    //connect(ui->);
 }
 
 View::~View() {
@@ -39,13 +37,16 @@ View::~View() {
     delete ui;
     workerThread.quit();
     workerThread.wait();
-   // delete usbDevice;
 }
 
 void View::setupPlot(const quint16 graphNum) {
+    ui->fourierGraph->addGraph();
+    ui->fourierGraph->xAxis->setRange(0, BUFFER_SIZE);
+
     for (quint16 i = 0; i < graphNum; i++) {
+        QColor color(qrand() % 256, qrand() % 256, qrand() % 256);
         ui->graph->addGraph();
-        ui->graph->graph(i)->setPen(QPen(Qt::gray + i % 10));
+        ui->graph->graph(i)->setPen(QPen(color));
     }
 
     for (quint16 i = graphNum; i < 2 * graphNum; i++) {
@@ -68,7 +69,7 @@ void View::plotEMGData(const quint32 key, const ElectrodeEMG &data) {
         ui->graph->graph(data.size() + i)->clearData();
         ui->graph->graph(data.size() + i)->addData((double)key, (double)data[i]);
         // remove data of lines that's outside visible range:
-        ui->graph->graph(i)->removeDataBefore((double)key-100);
+        ui->graph->graph(i)->removeDataBefore((double)key-1000);
 
     }
     // rescale value (vertical) axis to fit the current data:
@@ -78,8 +79,19 @@ void View::plotEMGData(const quint32 key, const ElectrodeEMG &data) {
     }
 
     // make key axis range scroll with the data (at a constant range size of 8):
-    ui->graph->xAxis->setRange((double)key+0.25, 100, Qt::AlignRight);
+    ui->graph->xAxis->setRange((double)key+0.25, 1000, Qt::AlignRight);
     ui->graph->replot();
+}
+
+void View::PlotFourierTransformation(FourierTransform yData) {
+    QVector<double> xData(yData.size());
+
+    for (int i = 0; i < yData.size(); i++)
+        xData[i] = i;
+
+    ui->fourierGraph->graph(0)->setData(xData, yData);
+    ui->fourierGraph->graph(0)->rescaleValueAxis();
+    ui->fourierGraph->replot();
 }
 
 void View::on_spinBox_valueChanged(int arg1) {
@@ -122,11 +134,6 @@ void View::on_learnButton_clicked() {
 
     _controler->SetANNLayers(hiddenLayers);
     emit startLearning();
-
-    //    _controler.Move(UP);
-    //    _controler.ShowResults();
-    //    _controler.Teach();
-
 }
 
 void View::changeInstruction(const Movement movement) {

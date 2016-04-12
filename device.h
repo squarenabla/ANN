@@ -5,18 +5,17 @@
 #define PID 0x5750
 #define ENDP 0x81
 
-#define BUFFER_SIZE 50
-
 #include <QThread>
 #include <QMutex>
 #include <QDebug>
 #include <QVector>
 #include <algorithm>
+#include <fstream>
 
 #include <libusb-1.0/libusb.h>
 
 #include "types.h"
-
+#include "FFT/fft.h"
 
 class Device : public QThread {
     Q_OBJECT
@@ -26,7 +25,7 @@ public:
 
     int Init();
 
-    int Interrupt(QVector<quint32> &data);
+    void Interrupt(QVector<EMGFourier> &data, const Movement movement);
 
     void run();
 
@@ -35,11 +34,16 @@ public:
 private:
     struct libusb_device_handle *devh;
     QVector<quint32> lastData;
-    QVector<QVector<quint32> > buffer;
+    QVector<QVector<qreal> > buffer;
+
+
     QMutex mutex;
     quint32 timeKey;
+    std::ifstream file;
+
 signals:
     void DataReceived(quint32 key, ElectrodeEMG data);
+    void FourierTranformation(FourierTransform data);
 };
 
 #endif // DEVICE_H

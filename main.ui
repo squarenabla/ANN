@@ -321,16 +321,14 @@
        <attribute name="title">
         <string>Monitor</string>
        </attribute>
-       <widget class="QCustomPlot" name="graph" native="true">
-        <property name="geometry">
-         <rect>
-          <x>120</x>
-          <y>40</y>
-          <width>491</width>
-          <height>171</height>
-         </rect>
-        </property>
-       </widget>
+       <layout class="QVBoxLayout" name="verticalLayout_6">
+        <item>
+         <widget class="QCustomPlot" name="graph" native="true"/>
+        </item>
+        <item>
+         <widget class="QCustomPlot" name="fourierGraph" native="true"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

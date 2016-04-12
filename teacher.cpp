@@ -32,9 +32,9 @@ OutputIterator transform (InputIterator first1, InputIterator last1,
 
 Teacher::Teacher(QObject *parent) : QObject(parent) {
     //default values
-    _desiredError = (qreal) 0.000001;
+    _desiredError = (qreal) 0.00001;
     _maxEpochs = 50000;
-    _epochsBetweenReports = 1000;
+    _epochsBetweenReports = 100;
 
     _numLayers = 5;
     _numNeuronsInLayer.push_back(ELECTRODENUM);
@@ -58,16 +58,21 @@ void Teacher::setLayers(const ANNLayers hiddenLayers) {
     }*/
 }
 
-void Teacher::createTrainData(const QVector<EMGdata> data) {
+void Teacher::createTrainData(const QVector<EMGFourierData> data) {
     qDebug()<<"createTrainData";
-    _data = fann_create_train( data.size(), ELECTRODENUM, 1 );
+    _data = fann_create_train( data.size(), BUFFER_SIZE * ELECTRODENUM, 1 );
 
-    fann_type input[ELECTRODENUM];
+    fann_type input[BUFFER_SIZE * ELECTRODENUM];
     fann_type output[1];
+
+    qDebug() << data.size() << " " << data[0].fourierArray.size() << data[0].fourierArray[0].size() << "==?"<<BUFFER_SIZE;
 
     for (int i = 0; i < data.size(); i++) {
         for (unsigned int j = 0; j < ELECTRODENUM; j++) {
-            input[j] = ((float)data[i].electrodeEMG[j])/MAXAMLVALUE;
+            for (unsigned int k = 0; k < data[i].fourierArray[j].size(); k++) {
+                input[j * BUFFER_SIZE + k] = (float)data[i].fourierArray[j][k];
+            }
+            //input[j] = ((float)data[i].electrodeEMG[j]);
         }
         output[0] = ((float)data[i].movementIndex)/MAXAMLVALUE;
 
@@ -94,10 +99,14 @@ void Teacher::trainOnData() {
     qDebug()<<"params";
     //const short unsigned int* data = (_numNeuronsInLayer.constData());
     //unsigned int* d = (unsigned int *)data;
+    _numLayers = 3;
     unsigned int data[_numLayers];
-    for (unsigned int i = 0; i < _numLayers; i++) {
-        data[i] = (unsigned int)_numNeuronsInLayer[i];
-    }
+    data[0] = BUFFER_SIZE * ELECTRODENUM;
+    data[1] = (unsigned int)(2 * sqrt((double)BUFFER_SIZE * ELECTRODENUM));
+    data[2] = 1;
+//    for (unsigned int i = 0; i < _numLayers; i++) {
+//        data[i] = (unsigned int)_numNeuronsInLayer[i];
+//    }
     struct fann *ann = fann_create_standard_array(_numLayers, data);
 
 

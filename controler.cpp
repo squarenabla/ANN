@@ -4,8 +4,10 @@
 
 Controler::Controler(QObject *parent) : QObject(parent) {
     _usbDevice.Init();
-    _usbDevice.start();
+    //_usbDevice.start();
+    _executor.SetANN(FANNFILENAME);
     connect(&_usbDevice, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SIGNAL(DataReceived(quint32,ElectrodeEMG)));
+    connect(&_usbDevice, SIGNAL(FourierTranformation(FourierTransform)), this, SIGNAL(FourierTranformation(FourierTransform)));
 }
 
 Controler::~Controler() {
@@ -25,29 +27,40 @@ int Controler::SetANNLayers(const ANNLayers hiddenLayers) {
 void Controler::Teach() {
     for (int i = 0; i < TRAINNUM; i++) {
         emit MovementChanged(trainSequence[i]);
-        QThread::sleep(2);
+        //QThread::sleep(2);
         _Move(trainSequence[i]);
     }
-    ShowResults();
+    //ShowResults();
     _teacher.createTrainData(_EMGresults);
     _teacher.trainOnData();
+
+    qDebug() << _EMGresults.size();
+    for (int i = 0; i < _EMGresults.size(); i++) {
+        emit FourierTranformation(_EMGresults[i].fourierArray[6]);
+      //  qDebug() << _EMGresults[i].movementIndex;
+        QThread::msleep(20);
+    }
 }
 
 void Controler::Execute() {
-    QVector<quint32> data(DATASIZE);
-    QVector<float> rdata(DATASIZE);
+    Movement direction = REST;
+    QVector<EMGFourier> data(ELECTRODENUM);
     QVector<float> result;
 
-    _executor.setANN(FANNFILENAME);
+    _usbDevice.Interrupt(data, direction);
 
-    _usbDevice.Interrupt(data);
-
-    std::transform(data.begin(), data.end(), rdata.begin(), [](quint32 val) -> float {
-                   return (float)val/MAXAMLVALUE;
-    });
-
-    _executor.execute(rdata, result);
-    printVector(result);
+    EMGFourierData EMGFourierElement;
+    EMGFourierElement.movementIndex = direction;
+    EMGFourierElement.fourierArray.resize(ELECTRODENUM);
+    //qDebug() << data;
+    for (int i = 0; i < data[0].size(); i++) {
+        for (int j = 0; j < ELECTRODENUM; j++) {
+            EMGFourierElement.fourierArray[j] = data[j][i];
+        }
+        //_EMGresults.push_back(EMGFourierElement);
+        _executor.Execute(EMGFourierElement, result);
+        qDebug() << result;
+    }
 }
 
 int Controler::_Move(const Movement direction) {
@@ -66,24 +79,33 @@ int Controler::_Move(const Movement direction) {
 
 //    _TransferData(resultsArray, direction);
 
-    for (unsigned int i = 0; i < INTERRUPTNUM; ++i) {
-        QVector<quint32> data(DATASIZE);
-        _usbDevice.Interrupt(data);
-        _TransferData(data, direction);
+ //   for (unsigned int i = 0; i < INTERRUPTNUM; ++i) {
+        QVector<EMGFourier> data(ELECTRODENUM);
+        _usbDevice.Interrupt(data, direction);
+        //_TransferData(data, direction);
+  //  }
+    EMGFourierData EMGFourierElement;
+    EMGFourierElement.movementIndex = direction;
+    EMGFourierElement.fourierArray.resize(ELECTRODENUM);
+    //qDebug() << data;
+    for (int i = 0; i < data[0].size(); i++) {
+        for (int j = 0; j < ELECTRODENUM; j++) {
+            EMGFourierElement.fourierArray[j] = data[j][i];
+        }
+        _EMGresults.push_back(EMGFourierElement);
     }
-    
     return 0;
 }
 
 void Controler::_TransferData(const QVector<quint32> data, const Movement direction) {
     qDebug()<<"_TransferData";
 
-    EMGdata EMGelement;
-    EMGelement.movementIndex = direction;
+//    EMGdata EMGelement;
+//    EMGelement.movementIndex = direction;
 
-    EMGelement.electrodeEMG = data;
+//    EMGelement.electrodeEMG = data;
 
-    _EMGresults.push_back(EMGelement);
+//    _EMGresults.push_back(EMGelement);
 
 //    for(unsigned int i=0; i<INTERRUPTNUM; i++){
 //        EMGdata EMGelement;
@@ -104,11 +126,11 @@ void Controler::_TransferData(const QVector<quint32> data, const Movement direct
 }
 
 void Controler::ShowResults(){
-    for (int i = 0; i < _EMGresults.size(); i++) {
-        qDebug()<<i<<": "<<_EMGresults[i].electrodeEMG[0]<<" "
-                         <<_EMGresults[i].electrodeEMG[1]<<" "
-                         <<_EMGresults[i].electrodeEMG[2]<<" "
-                         <<_EMGresults[i].electrodeEMG[3]<<" "
-                         <<" value: "<<_EMGresults[i].movementIndex;
-    }
+//    for (int i = 0; i < _EMGresults.size(); i++) {
+//        qDebug()<<i<<": "<<_EMGresults[i].electrodeEMG[0]<<" "
+//                         <<_EMGresults[i].electrodeEMG[1]<<" "
+//                         <<_EMGresults[i].electrodeEMG[2]<<" "
+//                         <<_EMGresults[i].electrodeEMG[3]<<" "
+//                         <<" value: "<<_EMGresults[i].movementIndex;
+//    }
 }

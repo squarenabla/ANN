@@ -31,6 +31,7 @@ public slots:
 signals:
     void MovementChanged(const Movement direction);
     void DataReceived(quint32 key, ElectrodeEMG data);
+    void FourierTranformation(FourierTransform data);
 private:
     int _Move(const Movement direction);
     void _TransferData(const QVector<quint32> data, const Movement direction);
@@ -39,7 +40,7 @@ private:
     Teacher _teacher;
     Executor _executor;
     Device  _usbDevice;
-    QVector<EMGdata> _EMGresults;
+    QVector<EMGFourierData> _EMGresults;
 };
 
 #endif // CONTROLER_H
