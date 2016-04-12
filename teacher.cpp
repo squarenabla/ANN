@@ -50,7 +50,6 @@ void Teacher::setLayers(const ANNLayers hiddenLayers) {
     _numNeuronsInLayer.push_front(ELECTRODENUM);
     _numNeuronsInLayer.push_back(1);
 
-    qDebug() << "Neurons";
     printVector(_numNeuronsInLayer);
     /*
     for(quint16 i = 0; i < hiddenLayers; i++){
@@ -116,14 +115,10 @@ void Teacher::trainOnData() {
     fann_set_activation_function_hidden(ann, FANN_SIGMOID_SYMMETRIC);
     fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
 
-    //fann_set_scaling_params(ann, _data, -1.0, 1.0, -1.0, 1.0);
     qDebug()<<"ann created";
 
     fann_save_train(_data, "./data/beforescaling");
 
-    //fann_scale_train(ann, _data);
-    //qDebug()<<"data scaled";
-    //fann_save_train(_data, "./data/afterscaling");
 
 
     fann_train_on_data(ann, _data, _maxEpochs, _epochsBetweenReports, _desiredError);

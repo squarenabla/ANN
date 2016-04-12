@@ -19,7 +19,6 @@ void Device::run() {
     QVector<double> fourierTransform(BUFFER_SIZE);
     while(!file.eof()) {
         mutex.lock();
-        //qDebug() << "Hello from device";
         for (int i = 0; i < ELECTRODENUM; i++) {
             qreal value;
             file >> value;
@@ -136,11 +135,6 @@ void Device::Interrupt(QVector<EMGFourier> &data, const Movement movement) {
         //seed++;
     }
 
-    //qDebug() << data;
-    //std::copy(pData, pData+size, data);
-    //resultSize = size;
-
-    //qDebug()<< actualBytesTransfered;
 
 }
 
