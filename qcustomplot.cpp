@@ -15589,11 +15589,11 @@ void QCPGraph::drawLinePlot(QCPPainter *painter, QVector<QPointF> *lineData) con
     {
       int i = 0;
       bool lastIsNan = false;
-      const int lineDataSize = lineData->size();
-      while (i < lineDataSize && (qIsNaN(lineData->at(i).y()) || qIsNaN(lineData->at(i).x()))) // make sure first point is not NaN
+      const int lineDATA_SIZE = lineData->size();
+      while (i < lineDATA_SIZE && (qIsNaN(lineData->at(i).y()) || qIsNaN(lineData->at(i).x()))) // make sure first point is not NaN
         ++i;
       ++i; // because drawing works in 1 point retrospect
-      while (i < lineDataSize)
+      while (i < lineDATA_SIZE)
       {
         if (!qIsNaN(lineData->at(i).y()) && !qIsNaN(lineData->at(i).x())) // NaNs create a gap in the line
         {
@@ -15609,8 +15609,8 @@ void QCPGraph::drawLinePlot(QCPPainter *painter, QVector<QPointF> *lineData) con
     {
       int segmentStart = 0;
       int i = 0;
-      const int lineDataSize = lineData->size();
-      while (i < lineDataSize)
+      const int lineDATA_SIZE = lineData->size();
+      while (i < lineDATA_SIZE)
      {
         if (qIsNaN(lineData->at(i).y()) || qIsNaN(lineData->at(i).x()) || qIsInf(lineData->at(i).y())) // NaNs create a gap in the line. Also filter Infs which make drawPolyline block
         {
@@ -15620,7 +15620,7 @@ void QCPGraph::drawLinePlot(QCPPainter *painter, QVector<QPointF> *lineData) con
         ++i;
       }
       // draw last segment:
-      painter->drawPolyline(lineData->constData()+segmentStart, lineDataSize-segmentStart);
+      painter->drawPolyline(lineData->constData()+segmentStart, lineDATA_SIZE-segmentStart);
     }
   }
 }
@@ -17112,11 +17112,11 @@ void QCPCurve::draw(QCPPainter *painter)
     {
       int i = 0;
       bool lastIsNan = false;
-      const int lineDataSize = lineData->size();
-      while (i < lineDataSize && (qIsNaN(lineData->at(i).y()) || qIsNaN(lineData->at(i).x()))) // make sure first point is not NaN
+      const int lineDATA_SIZE = lineData->size();
+      while (i < lineDATA_SIZE && (qIsNaN(lineData->at(i).y()) || qIsNaN(lineData->at(i).x()))) // make sure first point is not NaN
         ++i;
       ++i; // because drawing works in 1 point retrospect
-      while (i < lineDataSize)
+      while (i < lineDATA_SIZE)
       {
         if (!qIsNaN(lineData->at(i).y()) && !qIsNaN(lineData->at(i).x())) // NaNs create a gap in the line
         {
@@ -17132,8 +17132,8 @@ void QCPCurve::draw(QCPPainter *painter)
     {
       int segmentStart = 0;
       int i = 0;
-      const int lineDataSize = lineData->size();
-      while (i < lineDataSize)
+      const int lineDATA_SIZE = lineData->size();
+      while (i < lineDATA_SIZE)
       {
         if (qIsNaN(lineData->at(i).y()) || qIsNaN(lineData->at(i).x())) // NaNs create a gap in the line
         {
@@ -17143,7 +17143,7 @@ void QCPCurve::draw(QCPPainter *painter)
         ++i;
       }
       // draw last segment:
-      painter->drawPolyline(lineData->constData()+segmentStart, lineDataSize-segmentStart);
+      painter->drawPolyline(lineData->constData()+segmentStart, lineDATA_SIZE-segmentStart);
     }
   }
   

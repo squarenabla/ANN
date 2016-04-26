@@ -15,7 +15,9 @@
 #include <libusb-1.0/libusb.h>
 
 #include "types.h"
-#include "FFT/fft.h"
+#include "Algerba/fft.h"
+#include "Algerba/wavelet.h"
+#include "Algerba/rms.h"
 
 class Device : public QThread {
     Q_OBJECT
@@ -26,6 +28,8 @@ public:
     int Init();
 
     void Interrupt(QVector<EMGFourier> &data, const Movement movement);
+    void WaveletInterrupt(QVector<EMGWavelet> &data, const Movement movement);
+    void RMSInterrupt(QVector<EMGRMS> &data, const Movement movement);
 
     void run();
 
@@ -33,7 +37,7 @@ public:
 
 private:
     struct libusb_device_handle *devh;
-    QVector<quint32> lastData;
+    QVector<qreal> lastData;
     QVector<QVector<qreal> > buffer;
 
 
@@ -43,7 +47,9 @@ private:
 
 signals:
     void DataReceived(quint32 key, ElectrodeEMG data);
-    void FourierTranformation(FourierTransform data);
+    void FourierTranformation(EMGFourierVec data);
+    void WaveletTransformation(const EMGWaveletVec &data);
+    void RMSTransformation(const EMGRMSVec data, const quint32 time);
 };
 
 #endif // DEVICE_H

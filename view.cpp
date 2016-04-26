@@ -17,17 +17,21 @@ ui(new Ui::View) {
     _tableDelegate = new Delegate;
     ui->tableWidget->setItemDelegate(_tableDelegate);
 
-    setupPlot(ELECTRODENUM);
+    setupPlot(ELECTRODE_NUM);
 
     _controler = new Controler();
     _controler->moveToThread(&workerThread);
 
-    connect(ui->executeButton, SIGNAL(pressed()), _controler, SLOT(Execute()));
+    ui->executionWidget->SetImage(POINTER_IMGSRC);
+
+    //connect(ui->executeButton, SIGNAL(pressed()), _controler, SLOT(Execute()));
     connect(this, SIGNAL(startLearning()), _controler, SLOT(Teach()), Qt::QueuedConnection);
-    connect(_controler, SIGNAL(MovementChanged(Movement)), ui->trainWidget, SLOT(rotateImage(Movement)));
-    connect(_controler, SIGNAL(MovementChanged(Movement)), this, SLOT(changeInstruction(Movement)));
-    connect(_controler, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SLOT(plotEMGData(quint32,ElectrodeEMG)));
+    connect(_controler, SIGNAL(LearnMovementChanged(Movement)), ui->trainWidget, SLOT(RotateImage(Movement)));
+    connect(_controler, SIGNAL(LearnMovementChanged(Movement)), this, SLOT(changeInstruction(Movement)));
+    connect(_controler, SIGNAL(ExecuteMovementChanged(Movement)), ui->executionWidget, SLOT(MoveImage(Movement)));
+    //connect(_controler, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SLOT(plotEMGData(quint32,ElectrodeEMG)));
     connect(_controler, SIGNAL(FourierTranformation(FourierTransform)), this, SLOT(PlotFourierTransformation(FourierTransform)));
+    connect(_controler, SIGNAL(WaveletTransformation(WaveletTransform)), this, SLOT(PlotWaveletTransformation(WaveletTransform)));
     connect(&workerThread, SIGNAL(finished()), _controler, SLOT(deleteLater()));
     workerThread.start();
 }
@@ -69,7 +73,7 @@ void View::plotEMGData(const quint32 key, const ElectrodeEMG &data) {
         ui->graph->graph(data.size() + i)->clearData();
         ui->graph->graph(data.size() + i)->addData((double)key, (double)data[i]);
         // remove data of lines that's outside visible range:
-        ui->graph->graph(i)->removeDataBefore((double)key-1000);
+        ui->graph->graph(i)->removeDataBefore((double)key-300);
 
     }
     // rescale value (vertical) axis to fit the current data:
@@ -79,11 +83,22 @@ void View::plotEMGData(const quint32 key, const ElectrodeEMG &data) {
     }
 
     // make key axis range scroll with the data (at a constant range size of 8):
-    ui->graph->xAxis->setRange((double)key+0.25, 1000, Qt::AlignRight);
+    ui->graph->xAxis->setRange((double)key+0.25, 300, Qt::AlignRight);
     ui->graph->replot();
 }
 
 void View::PlotFourierTransformation(FourierTransform yData) {
+//    QVector<double> xData(yData.size());
+
+//    for (int i = 0; i < yData.size(); i++)
+//        xData[i] = i;
+
+//    ui->fourierGraph->graph(0)->setData(xData, yData);
+//    ui->fourierGraph->graph(0)->rescaleValueAxis();
+//    ui->fourierGraph->replot();
+}
+
+void View::PlotWaveletTransformation(const WaveletTransform &yData) {
     QVector<double> xData(yData.size());
 
     for (int i = 0; i < yData.size(); i++)
@@ -126,7 +141,7 @@ void View::on_learnButton_clicked() {
     //ui->tableWidget->insertRow(1);
     qDebug()<<"pb clicked";
 
-    ui->trainWidget->rotateImage(UP);
+    ui->trainWidget->RotateImage(UP);
     ANNLayers hiddenLayers(ui->tableWidget->rowCount());
     for (int i = 0; i < hiddenLayers.size(); i++) {
         hiddenLayers[i] = ui->tableWidget->item(i,0)->text().toUInt();
@@ -157,3 +172,37 @@ void View::changeInstruction(const Movement movement) {
         break;
     }
 }
+
+//============================
+//-------HardCode Test--------
+//============================
+
+void View::on_upBtn_clicked() {
+    _controler->Execute(UP);
+}
+
+void View::on_restBtn_clicked() {
+    _controler->Execute(REST);
+}
+
+void View::on_downBtn_clicked() {
+    _controler->Execute(DOWN);
+}
+
+void View::on_leftBtn_clicked() {
+    _controler->Execute(LEFT);
+}
+
+void View::on_rightBtn_clicked() {
+    _controler->Execute(RIGHT);
+}
+
+
+void View::on_executeButton_clicked() {
+    _controler->StartRTExecution();
+}
+
+void View::on_stopBtn_clicked() {
+    _controler->StopRTExecution();
+}
+

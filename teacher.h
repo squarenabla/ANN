@@ -17,7 +17,7 @@ signals:
 public slots:
     void setLayers(const ANNLayers hiddenLayers);
 
-    void createTrainData(const QVector<EMGFourierData> data);
+    void createTrainData(const QVector<EMGcharacteristics> data);
     void trainOnFile(const char *fileName);
     void trainOnData();
     //void trainOnData(TrainData trainData);
@@ -29,6 +29,7 @@ private:
     qreal                   _desiredError;
     quint16                 _maxEpochs;
     quint16                 _epochsBetweenReports;
+    quint32                  _DATA_SIZE;
     struct fann_train_data *_data;
 
 };

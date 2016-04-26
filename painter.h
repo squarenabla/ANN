@@ -22,12 +22,16 @@ public:
 signals:
 
 public slots:
-    void rotateImage(const Movement direction);
+    void RotateImage(const Movement direction);
+    void SetImage(const QString &fileName);
+    void MoveImage(const Movement direction);
 protected:
     void paintEvent(QPaintEvent *e);
 
     qreal rotateAngl;
     QImage image;
+    qint16 xPos;
+    qint16 yPos;
 };
 
 #endif // PAINTER_H

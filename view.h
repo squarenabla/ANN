@@ -25,12 +25,28 @@ private slots:
     void setupPlot(const quint16 graphNum);
     void plotEMGData(const quint32 key, const ElectrodeEMG &data);
     void PlotFourierTransformation(FourierTransform yData);
+    void PlotWaveletTransformation(const WaveletTransform &yData);
 
     void on_spinBox_valueChanged(int arg1);
 
     void on_learnButton_clicked();
 
     void changeInstruction(const Movement movement);
+
+
+    void on_upBtn_clicked();
+
+    void on_restBtn_clicked();
+
+    void on_downBtn_clicked();
+
+    void on_leftBtn_clicked();
+
+    void on_rightBtn_clicked();
+
+    void on_stopBtn_clicked();
+
+    void on_executeButton_clicked();
 
 signals:
     void startLearning();

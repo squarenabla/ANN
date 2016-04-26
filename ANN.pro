@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     view.cpp \
     painter.cpp \
     qcustomplot.cpp \
-    FFT/fft.cpp
+    Algerba/fft.cpp \
+    Algerba/wavelet.cpp
 
 HEADERS  += \
     teacher.h \
@@ -40,7 +41,10 @@ HEADERS  += \
     messages.h \
     painter.h \
     qcustomplot.h \
-    FFT/fft.h
+    Algerba/fft.h \
+    Algerba/wavelet.h \
+    Algerba/rms.h \
+    Algorithm/findmax.h
 
 FORMS    += \
     error.ui \

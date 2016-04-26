@@ -15,7 +15,7 @@ signals:
 
 public slots:
     void SetANN(const char *fileName);
-    void Execute(const EMGFourierData &data, QVector<float> &output);
+    void Execute(const EMGRMSData &data, QVector<float> &output);
 
 private:
     struct fann *_ann;

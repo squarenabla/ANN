@@ -33,11 +33,11 @@ OutputIterator transform (InputIterator first1, InputIterator last1,
 Teacher::Teacher(QObject *parent) : QObject(parent) {
     //default values
     _desiredError = (qreal) 0.00001;
-    _maxEpochs = 50000;
-    _epochsBetweenReports = 100;
+    _maxEpochs = 15000;
+    _epochsBetweenReports = 10;
 
     _numLayers = 5;
-    _numNeuronsInLayer.push_back(ELECTRODENUM);
+    _numNeuronsInLayer.push_back(ELECTRODE_NUM);
     for (quint16 i = 0; i < 3; i++) {
         _numNeuronsInLayer.push_back(2);
     }
@@ -47,7 +47,7 @@ Teacher::Teacher(QObject *parent) : QObject(parent) {
 void Teacher::setLayers(const ANNLayers hiddenLayers) {
     _numLayers = hiddenLayers.size() + 2;
     _numNeuronsInLayer = hiddenLayers;
-    _numNeuronsInLayer.push_front(ELECTRODENUM);
+    _numNeuronsInLayer.push_front(ELECTRODE_NUM);
     _numNeuronsInLayer.push_back(1);
 
     printVector(_numNeuronsInLayer);
@@ -57,23 +57,25 @@ void Teacher::setLayers(const ANNLayers hiddenLayers) {
     }*/
 }
 
-void Teacher::createTrainData(const QVector<EMGFourierData> data) {
+void Teacher::createTrainData(const QVector<EMGcharacteristics> data) {
     qDebug()<<"createTrainData";
-    _data = fann_create_train( data.size(), BUFFER_SIZE * ELECTRODENUM, 1 );
+    _data = fann_create_train( data.size(), ANN_INPUT_SIZE, MOVE_NUM );
+    _DATA_SIZE = data.size();
 
-    fann_type input[BUFFER_SIZE * ELECTRODENUM];
-    fann_type output[1];
+    fann_type input[ANN_INPUT_SIZE];
 
-    qDebug() << data.size() << " " << data[0].fourierArray.size() << data[0].fourierArray[0].size() << "==?"<<BUFFER_SIZE;
+
+
 
     for (int i = 0; i < data.size(); i++) {
-        for (unsigned int j = 0; j < ELECTRODENUM; j++) {
-            for (unsigned int k = 0; k < data[i].fourierArray[j].size(); k++) {
-                input[j * BUFFER_SIZE + k] = (float)data[i].fourierArray[j][k];
-            }
+        fann_type output[MOVE_NUM] = {0.0};
+        for (unsigned int j = 0; j < ELECTRODE_NUM; j++) {
+            //for (unsigned int k = 0; k < data[i].waveletArray[j].size(); k++) {
+                input[j] = (float)data[i].rms[j];
+            //}
             //input[j] = ((float)data[i].electrodeEMG[j]);
         }
-        output[0] = ((float)data[i].movementIndex)/MAXAMLVALUE;
+        output[data[i].movementIndex] = 1.0;
 
         fann_set_train_data(_data, i, input, output);
     }
@@ -89,7 +91,7 @@ void Teacher::trainOnFile(const char *fileName) {
     fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
 
     fann_train_on_file(ann, fileName, _maxEpochs, _epochsBetweenReports, _desiredError);
-    fann_save(ann, FANNFILENAME);
+    fann_save(ann, FANN_FILE_NAME);
     fann_destroy(ann);
 }
 
@@ -100,9 +102,10 @@ void Teacher::trainOnData() {
     //unsigned int* d = (unsigned int *)data;
     _numLayers = 3;
     unsigned int data[_numLayers];
-    data[0] = BUFFER_SIZE * ELECTRODENUM;
-    data[1] = (unsigned int)(2 * sqrt((double)BUFFER_SIZE * ELECTRODENUM));
-    data[2] = 1;
+    data[0] = ANN_INPUT_SIZE;
+    data[1] = (unsigned int)(sqrt((double)ANN_INPUT_SIZE) + (double)ANN_INPUT_SIZE/4  + sqrt((double)_DATA_SIZE/2));
+    data[2] = MOVE_NUM;
+    qDebug() << "number of hidden layers:" << data[1];
 //    for (unsigned int i = 0; i < _numLayers; i++) {
 //        data[i] = (unsigned int)_numNeuronsInLayer[i];
 //    }
@@ -123,7 +126,7 @@ void Teacher::trainOnData() {
 
     fann_train_on_data(ann, _data, _maxEpochs, _epochsBetweenReports, _desiredError);
     qDebug()<<"fann trained";
-    fann_save(ann, FANNFILENAME);
+    fann_save(ann, FANN_FILE_NAME);
     qDebug()<<"fann saved";
     fann_destroy(ann);
 }
