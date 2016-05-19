@@ -7,9 +7,10 @@ Controler::Controler(QObject *parent) : QObject(parent) {
     //_usbDevice.start();
     _executor.SetANN(FANN_FILE_NAME);
     connect(&_usbDevice, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SIGNAL(DataReceived(quint32,ElectrodeEMG)));
+    connect(&_usbDevice, SIGNAL(FourierTranformation(FourierTransform)), this, SIGNAL(FourierTranformation(FourierTransform)));
     //connect(&_usbDevice, SIGNAL(), this, SIGNAL(FourierTranformation(FourierTransform)));
     //connect(&_usbDevice, SIGNAL(FourierTranformation(EMGFourierVec)), this, SLOT(RealTimeExecute(EMGFourierVec)));
-    //connect(&_usbDevice, SIGNAL(WaveletTransformation(WaveletTransform)), this, SIGNAL(WaveletTransformation(WaveletTransform)));
+    connect(&_usbDevice, SIGNAL(WaveletTransformation(WaveletTransform)), this, SIGNAL(WaveletTransformation(WaveletTransform)));
     //connect(&_usbDevice, SIGNAL(WaveletTransformation(EMGWaveletVec)), this, SLOT(RealTimeExecute(EMGWaveletVec)));
     connect(&_usbDevice, SIGNAL(RMSTransformation(EMGRMSVec, quint32)), this, SLOT(RealTimeExecute(EMGRMSVec, quint32)));
 }
@@ -89,7 +90,15 @@ void Controler::RealTimeExecute(const EMGRMSVec data, const quint32 time) {
             EMGRMSElement.rmsArray[j] = data[j][i];
         }
         //_EMGresults.push_back(EMGFourierElement);
+
         _executor.Execute(EMGRMSElement, result);
+
+        qDebug() << MaxElement(result.begin(), result.end());
+        Movement movement = (Movement)MaxElement(result.begin(), result.end());
+        emit ExecuteMovementChanged(movement);
+
+
+      //  qDebug()
 //        if (_result.size() < BUFFER_SIZE) {
  //           _result.push_back(result[0]);
 //        }
@@ -100,9 +109,8 @@ void Controler::RealTimeExecute(const EMGRMSVec data, const quint32 time) {
 //        }
 
     }
-    Movement movement = (Movement)MaxElement(result.begin(), result.end());
-    emit ExecuteMovementChanged(movement);
-    qDebug() << time << result;
+
+  //  qDebug() << time << result;
 }
 
 int Controler::_Move(const Movement direction) {

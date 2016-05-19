@@ -36,8 +36,9 @@ signals:
     void LearnMovementChanged(const Movement direction);
     void ExecuteMovementChanged(const Movement direction);
     void DataReceived(quint32 key, ElectrodeEMG data);
-    void FourierTranformation(FourierTransform data);
+   // void FourierTranformation(FourierTransform data);
     void WaveletTransformation(const WaveletTransform &data);
+    void FourierTranformation(FourierTransform data);
 private:
     int _Move(const Movement direction);
     void _TransferData(const QVector<quint32> data, const Movement direction);

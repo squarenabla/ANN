@@ -29,7 +29,7 @@ ui(new Ui::View) {
     connect(_controler, SIGNAL(LearnMovementChanged(Movement)), ui->trainWidget, SLOT(RotateImage(Movement)));
     connect(_controler, SIGNAL(LearnMovementChanged(Movement)), this, SLOT(changeInstruction(Movement)));
     connect(_controler, SIGNAL(ExecuteMovementChanged(Movement)), ui->executionWidget, SLOT(MoveImage(Movement)));
-    //connect(_controler, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SLOT(plotEMGData(quint32,ElectrodeEMG)));
+    connect(_controler, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SLOT(plotEMGData(quint32,ElectrodeEMG)));
     connect(_controler, SIGNAL(FourierTranformation(FourierTransform)), this, SLOT(PlotFourierTransformation(FourierTransform)));
     connect(_controler, SIGNAL(WaveletTransformation(WaveletTransform)), this, SLOT(PlotWaveletTransformation(WaveletTransform)));
     connect(&workerThread, SIGNAL(finished()), _controler, SLOT(deleteLater()));
@@ -88,14 +88,14 @@ void View::plotEMGData(const quint32 key, const ElectrodeEMG &data) {
 }
 
 void View::PlotFourierTransformation(FourierTransform yData) {
-//    QVector<double> xData(yData.size());
+    QVector<double> xData(yData.size());
 
-//    for (int i = 0; i < yData.size(); i++)
-//        xData[i] = i;
+    for (int i = 0; i < yData.size(); i++)
+        xData[i] = i;
 
-//    ui->fourierGraph->graph(0)->setData(xData, yData);
-//    ui->fourierGraph->graph(0)->rescaleValueAxis();
-//    ui->fourierGraph->replot();
+    ui->fourierGraph->graph(0)->setData(xData, yData);
+    ui->fourierGraph->graph(0)->rescaleValueAxis();
+    ui->fourierGraph->replot();
 }
 
 void View::PlotWaveletTransformation(const WaveletTransform &yData) {

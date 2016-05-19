@@ -33,7 +33,7 @@ OutputIterator transform (InputIterator first1, InputIterator last1,
 Teacher::Teacher(QObject *parent) : QObject(parent) {
     //default values
     _desiredError = (qreal) 0.00001;
-    _maxEpochs = 15000;
+    _maxEpochs = 30000;
     _epochsBetweenReports = 10;
 
     _numLayers = 5;

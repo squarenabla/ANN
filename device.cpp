@@ -13,6 +13,8 @@ Device::~Device() {
 //    libusb_release_interface(devh, 0);
 //    libusb_exit(NULL);
     file.close();
+    libusb_release_interface(devh, 0);
+    libusb_exit(NULL);
 }
 
 void Device::run() {
@@ -20,11 +22,69 @@ void Device::run() {
     quint32 key = 0;
     QVector<EMGRMS> data(ELECTRODE_NUM);
 
-    while(!file.eof()) {
+
+
+    USB_Frame_t frame;
+    int size = 64;
+    int actualBytesTransfered;
+    unsigned char pData[size];
+
+    int t0 = time(0);
+    unsigned char buf[64];
+
+//    for(int n = 0; ; n++ ) {
+//      r = libusb_interrupt_transfer(devh, 1 | LIBUSB_ENDPOINT_IN, (unsigned char*)&pData, size, &actualBytesTransfered, 1000);
+
+
+//      if (r != 0) {
+//        qDebug() << "Error libusb_interrupt_transfer " << r <<" "<< actualBytesTransfered;
+//        exec();
+//      } else {
+//        //std::cout<< "Transmitted " << actualBytesTransfered << std::endl;
+//      }
+
+//      memcpy(&frame, &pData, sizeof(frame));
+
+
+//      qDebug() << frame.i << " v1 = "<< frame.samples[0].v1 << " v2 = "<< frame.samples[0].v2 <<  " v3 = "<< frame.samples[0].v3 << " v4 = "<< frame.samples[0].v4;
+
+//      int t1 = time(0);
+
+//      if( (t1 - t0) > 0 ) {
+//        qDebug() << (float)7.0 * n / (t1 - t0);
+//      }
+//    }
+
+
+    int r;
+    std::ofstream outFile("./data/deviceoutput.txt");
+
+    while(1) {
     //    mutex.lock();
+        r = libusb_interrupt_transfer(devh, 1 | LIBUSB_ENDPOINT_IN, (unsigned char*)&pData, size, &actualBytesTransfered, 1000);
+        if (r != 0) {
+            qDebug() << "Error libusb_interrupt_transfer " << r <<" "<< actualBytesTransfered;
+            exec();
+        } else {
+        //std::cout<< "Transmitted " << actualBytesTransfered << std::endl;
+        }
+
+        memcpy(&frame, &pData, sizeof(frame));
+        QVector<qreal> vecData(4);
+        vecData[0] = (qreal)frame.samples[0].v1/MAX_UINT16;
+        vecData[1] = (qreal)frame.samples[0].v2/MAX_UINT16;
+        vecData[2] = (qreal)frame.samples[0].v3/MAX_UINT16;
+        vecData[3] = (qreal)frame.samples[0].v4/MAX_UINT16;
+
+        //qDebug() << vecData;
+
+        outFile << std::endl;
+
         for (int i = 0; i < ELECTRODE_NUM; i++) {
-            qreal value;
-            file >> value;
+
+            qreal value = vecData[i];
+//            file >> value;
+            outFile << value << " ";
             lastData[i] = value;
            // if (seed % 16 == 0) {
 
@@ -34,8 +94,9 @@ void Device::run() {
           //  }
             if (key > BUFFER_SIZE) {
                 data[i].clear();
-                //Fourier transform
-                //FFTAnalysis(buffer[i], transformArray, BUFFER_SIZE, BUFFER_SIZE);
+                //FourierTransform transformArray(BUFFER_SIZE);
+                //EMGFourierVec transformArray;
+
                 //Wavelet transform --debug
                 //WaveletHaar(buffer[i], transformArray);
                 //WaveletRMS(transformArray, rmsArray);
@@ -43,12 +104,20 @@ void Device::run() {
                 double rms = RootMeanSquare(buffer[i]);
                 data[i].push_back(rms);
 
-                //if (i == 0) {
-                    //emit WaveletTransformation(transformArray);
+                if (i == 0) {
+                    //Fourier transform
+                    //FourierTransform transformArray(BUFFER_SIZE);
+                    //FFTAnalysis(buffer[i], transformArray, BUFFER_SIZE, BUFFER_SIZE);
+                    //emit FourierTranformation(transformArray);
+
+                    WaveletTransform transformArray(BUFFER_SIZE);
+                    WaveletHaar(buffer[i], transformArray);
+                    emit WaveletTransformation(transformArray);
+
                     //qDebug() << transformArray;
                 //    WaveletRMS(transformArray, rmsArrar);
                 //    qDebug() << rmsArrar;
-                //}
+                }
 
 
             }
@@ -57,7 +126,7 @@ void Device::run() {
      //   if (seed % 16 == 0) {
             if (key > BUFFER_SIZE) {
              //   key = 0;
-                //emit FourierTranformation(data);
+                 //emit FourierTranformation(data);
                  emit RMSTransformation(data, timeKey);
             }
             else {
@@ -77,13 +146,33 @@ void Device::run() {
         timeKey++;
         seed++;
    //     mutex.unlock();
-        msleep(5);
+        msleep(10);
     }
     exec();
 }
 
 int Device::Init() {
-    int r;
+    int r = libusb_init(NULL);
+    if (r < 0) {
+        qDebug() << r;
+        return r;
+    }
+
+    devh = NULL;
+    devh = libusb_open_device_with_vid_pid(NULL, VID, PID);
+
+    if (!devh) {
+        qDebug() << "Error finding USB device";
+        return -1;
+    }
+
+    libusb_set_auto_detach_kernel_driver(devh, 1);
+
+    r =  libusb_claim_interface(devh, 0);
+    if (r != 0) {
+        qDebug() << "Error claiming interface";
+        return -2;
+    }
 
 //    r = libusb_init(NULL);
 //    if (r < 0) {
@@ -132,7 +221,7 @@ void Device::WaveletInterrupt(QVector<EMGWavelet> &data, const Movement movement
     std::ofstream output;
 
     if (movement == REST) {
-        input.open("./data/rest");
+        input.open("./data/devrest");
     //    output.open("./data/results/rest");
     }
     if (movement == UP) {
@@ -145,11 +234,11 @@ void Device::WaveletInterrupt(QVector<EMGWavelet> &data, const Movement movement
     }
     if (movement == LEFT) {
         input.open("./data/left");
-    //    output.open("./data/results/left");
+    //    output.open("./data/results/devleft");
     }
     if (movement == RIGHT) {
         input.open("./data/right");
-    //    output.open("./data/results/right");
+    //    output.open("./data/results/devright");
     }
 
     quint32 seed = 0;
@@ -224,8 +313,8 @@ void Device::RMSInterrupt(QVector<EMGRMS> &data, const Movement movement) {
     std::ofstream output;
 
     if (movement == REST) {
-        input.open("./data/rest");
-    //    output.open("./data/results/rest");
+        input.open("./data/devrest");
+    //    output.open("./data/results/devrest");
     }
     if (movement == UP) {
         input.open("./data/up");
@@ -236,12 +325,12 @@ void Device::RMSInterrupt(QVector<EMGRMS> &data, const Movement movement) {
     //    output.open("./data/results/down");
     }
     if (movement == LEFT) {
-        input.open("./data/left");
-    //    output.open("./data/results/left");
+        input.open("./data/devleft");
+    //    output.open("./data/results/devleft");
     }
     if (movement == RIGHT) {
-        input.open("./data/right");
-    //    output.open("./data/results/right");
+        input.open("./data/devright");
+    //    output.open("./data/results/devright");
     }
 
     quint32 seed = 0;
