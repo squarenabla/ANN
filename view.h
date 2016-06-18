@@ -8,6 +8,7 @@
 //#include "device.h"
 #include "controler.h"
 #include "error.h"
+#include "login.h"
 
 namespace Ui {
     class View;
@@ -58,6 +59,7 @@ private:
     Ui::View *ui;
     //Device *usbDevice;
     Controler *_controler;
+    Login _loginer;
     Delegate *_tableDelegate;
     QThread workerThread;
 };

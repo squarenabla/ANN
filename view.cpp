@@ -33,7 +33,10 @@ ui(new Ui::View) {
     connect(_controler, SIGNAL(FourierTranformation(FourierTransform)), this, SLOT(PlotFourierTransformation(FourierTransform)));
     connect(_controler, SIGNAL(WaveletTransformation(WaveletTransform)), this, SLOT(PlotWaveletTransformation(WaveletTransform)));
     connect(&workerThread, SIGNAL(finished()), _controler, SLOT(deleteLater()));
+    connect(&_loginer, SIGNAL(loginSuccessful()), &_loginer, SLOT(close()));
     workerThread.start();
+    _loginer.setModal(true);
+    _loginer.show();
 }
 
 View::~View() {

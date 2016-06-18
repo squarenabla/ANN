@@ -5,7 +5,9 @@
 Controler::Controler(QObject *parent) : QObject(parent) {
     _usbDevice.Init();
     //_usbDevice.start();
+
     _executor.SetANN(FANN_FILE_NAME);
+
     connect(&_usbDevice, SIGNAL(DataReceived(quint32,ElectrodeEMG)), this, SIGNAL(DataReceived(quint32,ElectrodeEMG)));
     connect(&_usbDevice, SIGNAL(FourierTranformation(FourierTransform)), this, SIGNAL(FourierTranformation(FourierTransform)));
     //connect(&_usbDevice, SIGNAL(), this, SIGNAL(FourierTranformation(FourierTransform)));
@@ -39,6 +41,8 @@ void Controler::Teach() {
 
     _teacher.createTrainData(_EMGsequence);
     _teacher.trainOnData();
+
+    _executor.SetANN(FANN_FILE_NAME);
 
     qDebug() <<"size"<< _EMGresults.size();
    // for (int i = 0; i < _EMGresults.size(); i++) {
@@ -90,7 +94,7 @@ void Controler::RealTimeExecute(const EMGRMSVec data, const quint32 time) {
             EMGRMSElement.rmsArray[j] = data[j][i];
         }
         //_EMGresults.push_back(EMGFourierElement);
-
+//Ececturion
         _executor.Execute(EMGRMSElement, result);
 
         qDebug() << MaxElement(result.begin(), result.end());

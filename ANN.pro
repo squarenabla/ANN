@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT       += network
 QT       += printsupport
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,7 +28,8 @@ SOURCES += main.cpp\
     painter.cpp \
     qcustomplot.cpp \
     Algerba/fft.cpp \
-    Algerba/wavelet.cpp
+    Algerba/wavelet.cpp \
+    login.cpp
 
 HEADERS  += \
     teacher.h \
@@ -44,8 +46,10 @@ HEADERS  += \
     Algerba/fft.h \
     Algerba/wavelet.h \
     Algerba/rms.h \
-    Algorithm/findmax.h
+    Algorithm/findmax.h \
+    login.h
 
 FORMS    += \
     error.ui \
-    main.ui
+    main.ui \
+    login.ui

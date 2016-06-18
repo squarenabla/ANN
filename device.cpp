@@ -313,23 +313,23 @@ void Device::RMSInterrupt(QVector<EMGRMS> &data, const Movement movement) {
     std::ofstream output;
 
     if (movement == REST) {
-        input.open("./data/devrest");
+        input.open("./data/rest.txt");
     //    output.open("./data/results/devrest");
     }
     if (movement == UP) {
-        input.open("./data/up");
+        input.open("./data/up.txt");
     //    output.open("./data/results/up");
     }
     if (movement == DOWN) {
-        input.open("./data/down");
+        input.open("./data/down.txt");
     //    output.open("./data/results/down");
     }
     if (movement == LEFT) {
-        input.open("./data/devleft");
+        input.open("./data/left.txt");
     //    output.open("./data/results/devleft");
     }
     if (movement == RIGHT) {
-        input.open("./data/devright");
+        input.open("./data/right.txt");
     //    output.open("./data/results/devright");
     }
 
